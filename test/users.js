@@ -2,77 +2,74 @@ require('dotenv').config();
 const axios = require('axios');
 const { assert } = require('chai');
 
+const { generateRandomUser } = require('./helpers/dataHelpers');
+
 const BASE_URL = 'https://gorest.co.in/public/v2';
 
 const TOKEN = process.env.TOKEN;
+const authConfig = {
+  headers: {
+    Authorization: `Bearer ${TOKEN}`,
+  },
+};
 
 describe('Users Endpoint', () => {
   it('GET /users', async () => {
+    const userProps = ['id', 'name', 'email', 'gender', 'status'];
     const response = await axios.get(`${BASE_URL}/users`);
     const { status, statusText, data: users } = response;
-    // console.log(data);
-    // console.log(status, statusText);
 
     assert.equal(status, 200, 'status is correct');
     assert.equal(statusText, 'OK', 'status test is correct');
-    assert.equal(users.length, 20);
+    //assertStatus(status, 200).andText(statusText);
 
-    // users.forEach((user) => {
-    //   //const result = 'id' in user;
-    //  // assert.equal(result, true, 'all users have id field');
-    //   assert.hasAllKeys(
-    //     user,
-    //     ['id', 'name', 'email', 'gender', 'status'],
-    //     'all keys are present'
-    //   );
-    // });
-
-    //delete users[19].id;
-
-    let result = users.every((user) => {
-      return 'id' in user;
+    // all users have proper keys
+    users.forEach((user) => {
+      assert.containsAllKeys(user, userProps, 'all keys are present');
     });
 
-    console.log('############', result);
-
-    assert.equal(result, true, 'all users have id field');
+    // Alternative
+    // delete users[19].id; // - to fail test
+    // const result = users.every((user) => {
+    //   return userProps.every((prop) => prop in user);
+    // });
+    // assert.isTrue(result, 'all keys are present');
   });
 
   it('POST /users', async () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    };
+    const generatedUser = generateRandomUser();
+    const { status, statusText, data: returnedUser } = await axios.post(`${BASE_URL}/users`, generatedUser, authConfig);
+    assert.equal(status, 201, 'status is correct');
+    assert.equal(statusText, 'Created', 'status test is correct');
 
-    const user = {
-      name: 'Test Name',
-      email: 'test@email.com',
-      status: 'inactive',
-      gender: 'male',
-    };
+    //returnedUser.name = 'sdf'; //fail test
+    assert.ownInclude(returnedUser, generatedUser, 'saved user as same fields');
 
-    const response = await axios.post(`${BASE_URL}/users`, user, config);
-
-    const returnedUser = response.data;
-    // assert.equal(status, 200, 'status is correct');
-    // assert.equal(statusText, 'OK', 'status test is correct');
-    assert.ownInclude(returnedUser, user, 'saved user as same fields');
-    console.log(OBject.keys(response));
+    // Alternative
+    // returnedUser.name = 'fail test';
+    // const allFieldsSaved = Object.keys(generatedUser).every(
+    //   (key) => generatedUser[key] === returnedUser[key]
+    // );
+    // assert.isTrue(allFieldsSaved, 'user properties saved correctly');
   });
 
-  // parametrize
-  it(' GET /users by ${field}', async () => {
+  // TODO: parametrize
+  it('GET /users by name', async () => {
+    const name = 'Jeff Daugherty'; // is there a user with the name ??? what if not ?
     const config = {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
+      ...authConfig,
       params: {
-        name: 'Test Name',
+        name,
       },
     };
 
     const response = await axios.get(`${BASE_URL}/users`, config);
-    const user = response.data;
+    const users = response.data;
+
+    users.forEach((user) => assert.equal(user.name, name, `Username expected to be ${name}, got - ${user.name}`));
+
+    //Alternative
+    // const everyUserHasCorrectName = users.every((user) => user.name === name);
+    // assert.isTrue(everyUserHasCorrectName);
   });
 });
