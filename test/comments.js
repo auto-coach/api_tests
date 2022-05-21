@@ -13,7 +13,7 @@ const authConfig = {
   },
 };
 
-describe.only('Comments Endpoint', () => {
+describe.skip('Comments Endpoint', () => {
   it('GET /comments', async () => {
     const props = ['id', 'post_id', 'email', 'body'];
     const response = await axios.get(`${BASE_URL}/comments`);

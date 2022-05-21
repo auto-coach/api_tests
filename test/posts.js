@@ -13,7 +13,7 @@ const authConfig = {
   },
 };
 
-describe('POSTS Endpoint', () => {
+describe.skip('POSTS Endpoint', () => {
   it('GET /posts', async () => {
     const props = ['id', 'user_id', 'title', 'body'];
     const response = await axios.get(`${BASE_URL}/posts`);
