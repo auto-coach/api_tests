@@ -27,7 +27,7 @@ function generateRandomUser() {
 //genetate post with random text of random length
 function generateRandomPost(userId) {
   const titleLength = getRandomInt(1, 5);
-  const bodyLength = getRandomInt(10, 20);
+  const bodyLength = getRandomInt(1, 1);
 
   return {
     user_id: userId,

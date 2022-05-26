@@ -15,7 +15,7 @@ describe.skip('Basic Auth Example', () => {
     });
 
     if (response) {
-      assert.fail(`No response should be shown without credentials. Response is ${rsponse}`);
+      assert.fail(`No response should be shown without credentials. Response is ${response}`);
     }
   });
   // set credentials as axios params

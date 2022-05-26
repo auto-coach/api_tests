@@ -2,7 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const { assert } = require('chai');
 
-const { generateRandomComment } = require('./helpers/dataHelpers');
+const { generateRandomComment } = require('../../helpers/dataHelpers');
 
 const BASE_URL = 'https://gorest.co.in/public/v2';
 
